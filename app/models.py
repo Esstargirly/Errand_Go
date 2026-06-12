@@ -9,7 +9,12 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=True)  # nullable for Google users
     google_id = db.Column(db.String(255), nullable=True)  # nullable for email users
     auth_method = db.Column(db.String(20), nullable=False)  # "email" or "google"
-    location = db.Column(db.String(100), nullable=True)
+
+    mobile_number = db.Column(db.String(20), nullable=False)
+    country = db.Column(db.String(100), nullable=False)
+    city_community = db.Column(db.String(100), nullable=False)
+    gender = db.Column(db.String(20), nullable=False)
+
     is_verified = db.Column(db.Boolean, default=False)
     otp_code = db.Column(db.String(6), nullable=True)
     otp_expires_at = db.Column(db.DateTime, nullable=True)

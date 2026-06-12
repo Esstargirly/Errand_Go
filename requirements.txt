@@ -11,10 +11,12 @@ Flask-JWT-Extended==4.7.4
 Flask-Mail==0.10.0
 Flask-SQLAlchemy==3.1.1
 google-auth==2.53.0
+gunicorn==26.0.0
 idna==3.18
 itsdangerous==2.2.0
 Jinja2==3.1.6
 MarkupSafe==3.0.3
+packaging==26.2
 psycopg2-binary==2.9.12
 pyasn1==0.6.3
 pyasn1_modules==0.4.2

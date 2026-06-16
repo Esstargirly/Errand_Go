@@ -234,6 +234,8 @@ def login():
     }), 200
 
 # GOOGLE AUTH 
+# ─── GOOGLE AUTH ──────────────────────────────────────────────────────────────
+
 @auth.route("/google-auth", methods=["POST"])
 def google_auth():
     data = request.get_json()
@@ -265,14 +267,26 @@ def google_auth():
     if gender not in ["male", "female", "other"]:
         return jsonify({"error": "Gender must be male, female, or other"}), 400
 
-    # Verify token with Google
+    # --- Verify token with Google ---
     try:
-        google_client_id = os.getenv("GOOGLE_CLIENT_ID")
+        client_ids = [
+            os.getenv("GOOGLE_CLIENT_ID"),
+            os.getenv("GOOGLE_ANDROID_CLIENT_ID"),
+            os.getenv("GOOGLE_IOS_CLIENT_ID"),
+        ]
+        # Remove None values in case any env var is missing
+        client_ids = [cid for cid in client_ids if cid]
+
         id_info = id_token.verify_oauth2_token(
             google_token,
             google_requests.Request(),
-            google_client_id
+            audience=None
         )
+
+        # Manually check audience matches one of our client IDs
+        if id_info.get("aud") not in client_ids:
+            return jsonify({"error": "Invalid Google token"}), 401
+
     except ValueError:
         return jsonify({"error": "Invalid Google token"}), 401
 
@@ -283,7 +297,7 @@ def google_auth():
     if not is_email_verified:
         return jsonify({"error": "Google account email is not verified"}), 401
 
-    # Existing user → log in
+    # --- Existing user → log in ---
     existing_user = User.query.filter_by(email=email).first()
     if existing_user:
         token = create_access_token(identity=str(existing_user.id))
@@ -292,12 +306,12 @@ def google_auth():
             "token": token
         }), 200
 
-    # Check mobile number uniqueness for new user
+    # --- Check mobile number uniqueness for new user ---
     existing_mobile = User.query.filter_by(mobile_number=mobile_number).first()
     if existing_mobile:
         return jsonify({"error": "An account with this mobile number already exists"}), 409
 
-    # New user → save
+    # --- New user → save ---
     new_user = User(
         email=email,
         password=None,
@@ -315,6 +329,6 @@ def google_auth():
     token = create_access_token(identity=str(new_user.id))
 
     return jsonify({
-        "message": "Account Verified! Welcome to ErrandGo. Let's get things done for you.",
+        "message": "Account created successfully. Welcome to ErrandGo!",
         "token": token
     }), 201

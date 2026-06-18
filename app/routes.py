@@ -13,6 +13,10 @@ import os
 
 auth = Blueprint("auth", __name__)
 
+@auth.route("/health", methods=["GET"])
+def health():
+    return jsonify({"status": "ErrandGo backend is live"}), 200
+
 # HELPER FUNCTIONS
 def is_valid_email(email):
     pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'

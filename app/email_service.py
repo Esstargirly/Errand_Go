@@ -8,7 +8,6 @@ def generate_otp():
     return str(random.randint(100000, 999999))
 
 def send_otp_email(email, otp_code):
-    """Send OTP verification email to user"""
     configuration = sib_api_v3_sdk.Configuration()
     configuration.api_key['api-key'] = os.getenv("BREVO_API_KEY")
 
